@@ -1,107 +1,115 @@
 # 🏥 Vantari Health
 
-### Plataforma SaaS multi-tenant para gestión clínica, interoperabilidad y seguridad en salud
+### Infraestructura digital para una salud conectada, segura e interoperable.
 
-Vantari Health es una plataforma **HealthTech de gestión clínica y sanitaria** diseñada para instituciones de salud públicas y privadas.
+**Vantari Health** es una plataforma **HealthTech SaaS multi-tenant** para la gestión clínica y sanitaria de instituciones públicas y privadas.
 
-Su objetivo es digitalizar y conectar los distintos puntos de atención de una red sanitaria —**CAPS, hospitales, laboratorios, farmacia y especialistas**— manteniendo la identidad del paciente, su información clínica, la seguridad de las decisiones, la interoperabilidad y la trazabilidad de las operaciones.
+El proyecto busca digitalizar y conectar los distintos puntos de atención de una red sanitaria —**CAPS, hospitales, laboratorios, farmacia y especialistas**— manteniendo la identidad del paciente, su información clínica, la seguridad de las decisiones, la interoperabilidad y la trazabilidad de las operaciones.
 
 > **Paciente → CAPS → Hospital → Laboratorio → Farmacia → Especialista**
 
-Vantari no busca simplemente reemplazar formularios de papel por pantallas. El objetivo es construir una **infraestructura digital clínica interoperable**, donde la información acompañe al paciente y donde el sistema pueda aplicar reglas de seguridad contextual antes de que ocurran errores.
+Vantari no busca simplemente reemplazar formularios de papel por pantallas. El objetivo es construir una **infraestructura digital clínica interoperable**, capaz de acompañar al paciente a través de una red sanitaria y aplicar mecanismos de seguridad contextual sobre la información clínica.
 
 ---
 
 ## 📋 Tabla de contenidos
 
-* [Descripción](#-descripción)
-* [Estado del proyecto](#-estado-del-proyecto)
+* [¿Qué es Vantari?](#-qué-es-vantari)
+* [Problema que busca resolver](#-problema-que-busca-resolver)
 * [Características principales](#-características-principales)
 * [Seguridad clínica](#-seguridad-clínica)
+* [RBAC + ABAC](#-rbac--abac)
+* [Clinical Workbench](#-clinical-workbench)
+* [Derivaciones interinstitucionales](#-derivaciones-interinstitucionales)
+* [Agenda y turnos](#-agenda-y-turnos)
+* [Farmacia](#-farmacia)
 * [Interoperabilidad FHIR](#-interoperabilidad-fhir)
 * [Arquitectura](#️-arquitectura)
-* [Control de acceso](#-control-de-acceso)
-* [Módulos actuales](#-módulos-actuales)
-* [Stack tecnológico](#️-stack-tecnológico)
+* [Multi-tenancy](#-multi-tenancy)
+* [Auditoría](#-auditoría)
+* [Estado del proyecto](#-estado-del-proyecto)
 * [Roadmap](#️-roadmap)
-* [Estructura del proyecto](#-estructura-del-proyecto)
-* [Instalación](#-instalación)
-* [Estado de testing](#-estado-de-testing)
-* [Visión](#-visión)
+* [Código fuente](#-código-fuente)
+* [Contacto](#-contacto)
 
 ---
 
-# 📖 Descripción
+# 📖 ¿Qué es Vantari?
 
-Vantari está orientado a resolver problemas frecuentes de los sistemas sanitarios fragmentados:
+Vantari Health nace con una visión simple:
 
-* Información clínica distribuida entre papel, Excel y sistemas aislados.
-* Falta de continuidad entre CAPS y hospitales.
-* Información de alergias o antecedentes que no llega correctamente al siguiente profesional.
-* Procesos administrativos manuales.
-* Dificultad para gestionar turnos y listas de espera.
-* Falta de trazabilidad sobre quién accedió o modificó información clínica.
-* Falta de mecanismos automáticos de seguridad clínica.
-* Dificultad para generar información estadística y operativa en tiempo real.
+> **La información clínica debería acompañar al paciente, no quedar atrapada dentro de una institución.**
 
-La plataforma utiliza una arquitectura **multi-tenant**, permitiendo que distintas instituciones puedan operar de manera aislada dentro de una misma infraestructura.
+En muchos sistemas sanitarios, la información se encuentra fragmentada entre:
 
-La información clínica se mantiene estructurada y preparada para interoperabilidad mediante **FHIR R4 / HL7**.
+* Historias clínicas en papel.
+* Planillas Excel.
+* Sistemas independientes.
+* Formularios de derivación.
+* Registros administrativos.
+* Información que no se comparte entre instituciones.
+
+Vantari propone una arquitectura donde estos procesos puedan formar parte de una misma infraestructura digital.
+
+```text
+                         VANTARI HEALTH
+                              │
+          ┌───────────────────┼───────────────────┐
+          │                   │                   │
+         CAPS              HOSPITAL          LABORATORIO
+          │                   │                   │
+          └───────────────────┼───────────────────┘
+                              │
+                         FARMACIA
+                              │
+                       ESPECIALISTAS
+```
+
+La plataforma combina:
+
+**Gestión clínica + Seguridad + Interoperabilidad + Auditoría + Gestión sanitaria**
 
 ---
 
-# 🚦 Estado del proyecto
+# 🎯 Problema que busca resolver
 
-## 🟢 Pre-producción / plataforma funcional
+Vantari está orientado principalmente a problemas presentes en redes sanitarias donde diferentes instituciones deben compartir información y coordinar la atención.
 
-El núcleo de Vantari se encuentra actualmente operativo y en desarrollo activo.
+Entre ellos:
 
-### Backend
+### 🧑‍⚕️ Atención clínica
 
-* API REST construida con FastAPI.
-* PostgreSQL con arquitectura multi-tenant mediante schemas.
-* Autenticación mediante JWT.
-* RBAC basado en roles y permisos.
-* ABAC para control de acceso contextual.
-* Reglas clínicas.
-* Validación de matrícula profesional.
-* Auditoría de operaciones.
-* Gestión de pacientes.
-* Gestión de encuentros clínicos.
-* Observaciones y signos vitales.
-* Condiciones y alergias.
-* Medicaciones y prescripciones.
-* Seguridad de prescripción.
-* Agenda y turnos.
-* Lista de espera.
-* Derivaciones.
-* Farmacia e inventario.
-* Reportes y exportaciones.
-* Métricas operativas.
-* Interoperabilidad FHIR R4.
+* Información clínica fragmentada.
+* Falta de contexto al atender a un paciente.
+* Antecedentes y alergias que pueden no estar disponibles.
+* Registros clínicos difíciles de consultar rápidamente.
 
-### Frontend
+### 📅 Turnos
 
-Aplicación web construida con Next.js y TypeScript.
+* Gestión manual de agendas.
+* Sobreturnos sin trazabilidad.
+* Listas de espera inexistentes o informales.
+* Dificultad para reutilizar turnos cancelados.
 
-Actualmente incluye:
+### 📨 Derivaciones
 
-* Dashboard.
-* Login.
-* Gestión de pacientes.
-* Detalle clínico del paciente.
-* Clinical Workbench.
-* Encuentros.
-* Observaciones.
-* Profesionales.
-* Agenda y turnos.
-* Lista de espera.
-* Derivaciones.
-* Farmacia.
-* Auditoría.
-* Reportes.
-* Prescripción electrónica.
-* Interfaz consciente de permisos.
+* Formularios en papel.
+* Información incompleta.
+* Falta de comunicación entre CAPS y hospitales.
+* Pérdida del contexto clínico durante una derivación.
+
+### 💊 Medicación
+
+* Separación entre prescripción y farmacia.
+* Falta de información sobre disponibilidad.
+* Riesgo de errores relacionados con alergias.
+* Dificultad para conocer si una medicación fue efectivamente dispensada.
+
+### 📊 Gestión sanitaria
+
+* Información estadística generada manualmente.
+* Datos distribuidos entre diferentes sistemas.
+* Dificultad para obtener métricas operativas en tiempo real.
 
 ---
 
@@ -109,134 +117,145 @@ Actualmente incluye:
 
 ## 👤 Gestión de pacientes
 
-Permite administrar la identidad y datos básicos del paciente, incluyendo:
+Vantari permite administrar:
 
+* Identidad del paciente.
+* Documento.
 * Datos demográficos.
-* Documento de identidad.
 * Información de contacto.
-* Estado del paciente.
-* Historial clínico.
 * Alergias.
 * Condiciones.
 * Medicación.
 * Observaciones.
-* Encuentros.
+* Encuentros clínicos.
+* Historial de atención.
 
-### Búsqueda clínica tolerante
+### 🔎 Búsqueda tolerante
 
-La búsqueda de pacientes permite localizar personas mediante:
+El sistema permite localizar pacientes mediante:
 
 * DNI completo.
-* DNI con formato (`30.123.456`).
-* DNI parcial/prefijo.
+* DNI con formato.
+* DNI parcial.
 * Nombre.
 * Apellido.
-* Búsquedas sin necesidad de ingresar correctamente las tildes.
+* Búsquedas sin necesidad de escribir correctamente las tildes.
 
-Ejemplo:
+Por ejemplo:
 
 ```text
-Perez     → Pérez
-Gomez     → Gómez
-Fernandez → Fernández
+Perez      → Pérez
+Gomez      → Gómez
+Fernandez  → Fernández
 ```
 
 ---
 
 # 🩺 Clinical Workbench
 
-El **Clinical Workbench** concentra la información clínica más importante del paciente en una vista ejecutiva.
+El **Clinical Workbench** concentra la información clínica relevante del paciente en una única vista.
 
-El objetivo es permitir que un profesional pueda comprender el estado general del paciente en segundos.
+El objetivo es permitir que un profesional pueda obtener rápidamente el contexto necesario para una atención segura.
 
-Actualmente presenta:
+Actualmente contempla:
 
-* 🔴 Alertas de alergias de alta criticidad.
+* 🔴 Alertas de alergias.
 * ⚠️ Condiciones activas.
 * 💊 Medicación activa.
 * 📋 Última atención.
 * Información clínica relevante.
 
-La interfaz evita depender de múltiples pantallas para obtener el contexto básico del paciente.
+La idea central es:
+
+> **"Resumen clínico en 2 segundos."**
 
 ---
 
 # 🛡️ Seguridad clínica
 
-Uno de los objetivos principales de Vantari es que el sistema no sea únicamente un repositorio de información, sino que pueda **intervenir cuando detecta un riesgo clínico**.
+Vantari incorpora reglas clínicas que permiten que el sistema no sea solamente un repositorio de información.
 
-## Momento G5 — Seguridad de prescripción
+El sistema puede **evaluar determinadas acciones antes de permitirlas**.
 
-Vantari implementa reglas clínicas capaces de detectar conflictos entre medicamentos y alergias.
+## 💊 Momento G5 — Seguridad de prescripción
 
-Por ejemplo:
+Uno de los flujos principales desarrollados es la detección de conflictos entre medicamentos y alergias.
+
+Ejemplo:
 
 ```text
-Paciente:
-Alergia → Penicilina
-
-Profesional:
-Prescribe → Amoxicilina
-
-        ↓
-
-Motor de reglas clínicas
-
-        ↓
-
-ALLERGY_CONFLICT
-
-        ↓
-
-🔴 PRESCRIPCIÓN BLOQUEADA
+Paciente
+   │
+   └── Alergia: Penicilina
+            │
+            ▼
+Profesional intenta prescribir
+            │
+            └── Amoxicilina
+                    │
+                    ▼
+             Motor de reglas
+                    │
+                    ▼
+             ALLERGY_CONFLICT
+                    │
+                    ▼
+             🔴 BLOQUEADO
 ```
 
-El sistema contempla relaciones de familia farmacológica y no únicamente coincidencias textuales exactas.
+La lógica contempla relaciones de familia farmacológica y no solamente coincidencias exactas de texto.
 
-Actualmente existen reglas relacionadas con familias como:
+Entre las familias contempladas actualmente se encuentran:
 
 * Penicilínicos.
 * Cefalosporinas.
 * Sulfonamidas.
 * AINEs.
 
-La prescripción se somete a evaluación antes de ser firmada.
+La prescripción es evaluada antes de su firma clínica.
 
 ---
 
-# 🔐 Control de acceso RBAC + ABAC
+# 🔐 RBAC + ABAC
 
-Vantari combina dos mecanismos de autorización.
+Vantari utiliza una arquitectura combinada de **Role-Based Access Control (RBAC)** y **Attribute-Based Access Control (ABAC)**.
 
 ## RBAC
 
-El sistema utiliza roles y permisos para determinar qué operaciones puede realizar cada usuario.
+Determina qué puede hacer cada usuario según su rol y permisos.
 
-Entre los roles contemplados se encuentran:
+Los roles contemplados incluyen:
 
-* `admin`
-* `medico`
-* `director_medico`
-* `enfermeria`
-* `administrativo`
-* `bioquimico`
-* `trabajador_social`
-* `farmacia`
+```text
+admin
+medico
+director_medico
+enfermeria
+administrativo
+bioquimico
+trabajador_social
+farmacia
+```
 
-El sistema actualmente cuenta con un catálogo de permisos granular.
+Los permisos son granulares y están orientados a recursos y operaciones.
 
 Ejemplos:
 
 ```text
 patients.read
 patients.write
+
 encounters.read
 encounters.write
+
 observations.read
 observations.write
+
 medications.read
 prescriptions.write
+
 clinical.sign
+
 appointments.manage
 reports.read
 admin.users
@@ -244,67 +263,53 @@ admin.users
 
 ## ABAC
 
-El RBAC se complementa con **Attribute-Based Access Control**.
+ABAC agrega una segunda capa:
 
-Esto permite que un usuario pueda tener un permiso general pero que la operación sea restringida según el contexto.
+> **No alcanza con saber quién es el usuario. También importa qué está intentando hacer y sobre qué contexto.**
 
-Ejemplo:
+Por ejemplo:
 
 ```text
 Enfermería
-    ↓
-encounters.write
-    ↓
-encounter_type
-    ↓
-permitido:
-    nursing
-    control
+    │
+    └── encounters.write
+             │
+             ▼
+       encounter_type
+             │
+      ┌──────┴──────┐
+      ▼             ▼
+   control       nursing
+      │             │
+      └──────┬──────┘
+             ▼
+           ALLOW
 
-otro tipo
-    ↓
-403 Forbidden
+consulta médica
+      │
+      ▼
+     DENY
+      │
+      ▼
+      403
 ```
 
 El motor ABAC contempla:
 
-* Evaluación contextual.
-* Políticas almacenadas en PostgreSQL.
+* Políticas contextuales.
 * Resolución de atributos.
 * Evaluación por prioridad.
 * Deny override.
-* Auditoría de accesos denegados.
+* Políticas almacenadas en base de datos.
+* Auditoría de denegaciones.
 
 ---
 
-# 📜 Auditoría
+# 📨 Derivaciones interinstitucionales
 
-Las operaciones relevantes son registradas mediante un sistema de auditoría.
+Vantari incorpora un flujo completo para derivaciones entre instituciones.
 
-La auditoría permite mantener trazabilidad sobre eventos como:
-
-* Creación de recursos.
-* Modificaciones.
-* Visualización.
-* Cambios de estado.
-* Acciones clínicas.
-* Denegaciones ABAC.
-
-Las denegaciones de autorización contextual se registran específicamente como:
-
-```text
-action = abac_deny
-```
-
-Esto permite investigar posteriormente quién intentó realizar una operación, sobre qué recurso y bajo qué contexto.
-
----
-
-# 🏥 Derivaciones CAPS → Hospital
-
-Vantari implementa un flujo completo de derivaciones clínicas.
-
-El objetivo es reemplazar el tradicional:
+El objetivo es transformar:
 
 ```text
 CAPS
@@ -316,7 +321,7 @@ paciente
 hospital
 ```
 
-por:
+en:
 
 ```text
 CAPS
@@ -328,9 +333,9 @@ Resumen clínico estructurado
 Hospital
 ```
 
-Una derivación puede incluir un resumen clínico generado automáticamente a partir de la información disponible del paciente.
+Una derivación puede generar automáticamente un resumen clínico utilizando información existente del paciente.
 
-El resumen puede incorporar:
+Puede incluir:
 
 * Alergias.
 * Condiciones.
@@ -338,7 +343,7 @@ El resumen puede incorporar:
 * Encuentros recientes.
 * Información clínica relevante.
 
-El flujo actualmente contempla:
+El flujo contempla:
 
 ```text
 draft
@@ -350,37 +355,31 @@ received
 closed
 ```
 
-Además, las operaciones quedan registradas mediante auditoría.
+Las operaciones también quedan registradas mediante auditoría.
 
 ---
 
-# 📅 Agenda, turnos y lista de espera
+# 📅 Agenda y turnos
 
-El backend cuenta con infraestructura para:
+Vantari cuenta con infraestructura para gestionar agendas y turnos.
+
+Actualmente contempla:
 
 * Plantillas de horarios.
 * Generación de slots.
-* Reservas.
+* Disponibilidad.
+* Reserva.
 * Liberación de turnos.
 * Lista de espera.
 * Gestión de citas.
 
-La agenda permite trabajar con:
-
-* Profesionales.
-* Fechas.
-* Horarios.
-* Slots disponibles.
-* Pacientes.
-* Lista de espera.
-
-El objetivo es evitar que la gestión de turnos dependa de identificadores internos o procesos manuales.
+El objetivo es que un administrativo pueda trabajar con la agenda sin tener que manipular identificadores internos o procesos manuales.
 
 ---
 
 # 💊 Farmacia
 
-Vantari incorpora infraestructura para gestión de farmacia e inventario.
+El sistema incorpora infraestructura para gestión de farmacia e inventario.
 
 Incluye:
 
@@ -390,29 +389,29 @@ Incluye:
 * Alertas.
 * Movimientos de inventario.
 * Dispensación.
-* Seguimiento de transacciones.
+* Transacciones.
 
-Esto permite avanzar hacia una conexión entre:
+La visión es conectar progresivamente:
 
 ```text
 Prescripción
-      ↓
+     ↓
 Farmacia
-      ↓
+     ↓
 Stock
-      ↓
+     ↓
 Dispensación
 ```
 
-reduciendo la separación entre el acto médico y la disponibilidad real del medicamento.
+permitiendo reducir la separación existente entre la decisión clínica y la disponibilidad real de medicamentos.
 
 ---
 
 # 📊 Dashboard y métricas
 
-El dashboard consume métricas reales del backend.
+Vantari incorpora un dashboard basado en métricas reales del backend.
 
-Entre las métricas disponibles se encuentran:
+Actualmente permite consultar información como:
 
 * Pacientes.
 * Profesionales.
@@ -423,365 +422,327 @@ Entre las métricas disponibles se encuentran:
 * Alergias críticas.
 * Actividad mensual.
 
-La arquitectura permite ampliar posteriormente estas métricas hacia indicadores operativos y sanitarios de una institución o red.
+La arquitectura permite ampliar estas métricas hacia indicadores operativos, administrativos y sanitarios.
 
 ---
 
 # 🔬 Interoperabilidad FHIR
 
-Vantari utiliza **FHIR R4 (HL7)** como capa de interoperabilidad.
+Vantari utiliza **HL7 FHIR R4** como capa de interoperabilidad.
 
-FHIR no constituye el dominio interno completo del sistema.
+El proyecto utiliza un enfoque **Domain-First**, por lo que FHIR no reemplaza el modelo de dominio interno.
 
-El enfoque utilizado es:
+La arquitectura conceptual es:
 
 ```text
-Dominio Vantari
-       ↓
-Domain Model
-       ↓
-FHIR Mapper
-       ↓
-FHIR R4
+                 VANTARI DOMAIN
+                       │
+                       ▼
+                  FHIR MAPPERS
+                       │
+                       ▼
+                    FHIR R4
+                       │
+                       ▼
+              External Systems
 ```
-
-Esto permite mantener un modelo de dominio orientado a las necesidades de la aplicación mientras FHIR funciona como una interfaz estandarizada de intercambio.
 
 Entre los recursos trabajados se encuentran:
 
-* Patient
-* Practitioner
-* Encounter
-* Observation
-* Condition
-* AllergyIntolerance
-* Medication
-* MedicationRequest
-* Composition
-* Bundle
-* CapabilityStatement
+* `Patient`
+* `Practitioner`
+* `Encounter`
+* `Observation`
+* `Condition`
+* `AllergyIntolerance`
+* `Medication`
+* `MedicationRequest`
+* `Composition`
+* `Bundle`
+* `CapabilityStatement`
 
-La arquitectura está preparada para continuar ampliando la cobertura FHIR.
+Esto permite que Vantari pueda evolucionar hacia integraciones con otros sistemas sanitarios.
 
 ---
 
 # 🏗️ Arquitectura
 
-Vantari utiliza un enfoque **Domain-First**.
-
-La arquitectura separa:
+Vantari utiliza un enfoque **Domain-First**, buscando separar claramente:
 
 ```text
 Frontend
-    ↓
+    │
+    ▼
 REST API
-    ↓
+    │
+    ▼
 Application Services
-    ↓
+    │
+    ▼
 Domain
-    ↓
+    │
+    ▼
 Persistence
-    ↓
+    │
+    ▼
 PostgreSQL
 ```
 
-Con una capa adicional de interoperabilidad:
+Con capas transversales de:
+
+```text
+Authentication
+      │
+      ▼
+RBAC
+      │
+      ▼
+ABAC
+      │
+      ▼
+Clinical Rules
+      │
+      ▼
+Audit
+```
+
+Y una capa de interoperabilidad:
 
 ```text
 Domain
-   ↓
+   │
+   ▼
 FHIR Mappers
-   ↓
+   │
+   ▼
 FHIR R4
-```
-
-Y una capa transversal de seguridad:
-
-```text
-Request
-   ↓
-Authentication
-   ↓
-RBAC
-   ↓
-ABAC
-   ↓
-Clinical Rules
-   ↓
-Audit
 ```
 
 ---
 
 # 🏢 Multi-tenancy
 
-Vantari está diseñado como plataforma SaaS multi-tenant.
+Vantari está diseñado como una plataforma **SaaS multi-tenant**.
 
-Cada institución puede operar dentro de un contexto aislado.
-
-La arquitectura utiliza **PostgreSQL schemas** para separar los datos de cada tenant.
+La arquitectura utiliza PostgreSQL con separación por schemas para aislar los datos de diferentes tenants.
 
 Conceptualmente:
 
 ```text
-Vantari
-│
-├── Tenant A
-│   └── PostgreSQL schema
-│
-├── Tenant B
-│   └── PostgreSQL schema
-│
-└── Tenant C
-    └── PostgreSQL schema
+                    VANTARI
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+       Tenant A     Tenant B     Tenant C
+          │            │            │
+       Schema A     Schema B     Schema C
 ```
 
-Esto permite evolucionar hacia escenarios donde diferentes instituciones de una red sanitaria puedan operar de forma independiente y, posteriormente, establecer mecanismos controlados de interoperabilidad.
+Esto permite evolucionar hacia escenarios donde diferentes instituciones puedan operar independientemente dentro de la misma plataforma.
+
+La arquitectura también contempla mecanismos controlados de interoperabilidad entre instituciones.
 
 ---
 
-# 🛠️ Stack tecnológico
+# 📜 Auditoría
 
-## Frontend
+La trazabilidad es un componente fundamental del sistema.
 
-* Next.js
-* React
-* TypeScript
-* Tailwind CSS
-* TanStack Query
-* shadcn/ui
+Vantari registra eventos relevantes relacionados con:
 
-## Backend
+* Creación de recursos.
+* Modificaciones.
+* Visualizaciones.
+* Cambios de estado.
+* Acciones clínicas.
+* Denegaciones de autorización.
+* Operaciones sobre derivaciones.
 
-* Python
-* FastAPI
-* SQLAlchemy
-* Alembic
-* Pydantic
+Las denegaciones ABAC utilizan específicamente:
 
-## Base de datos
+```text
+action = abac_deny
+```
 
-* PostgreSQL
-* Arquitectura multi-tenant mediante schemas.
-
-## Interoperabilidad
-
-* HL7 FHIR R4
-
-## Infraestructura
-
-* Docker
-* Docker Compose
-* Linux
-* VPS / Cloud infrastructure
-
-## Seguridad
-
-* JWT
-* RBAC
-* ABAC
-* Auditoría
-* Reglas clínicas
+Esto permite mantener un historial de las operaciones relevantes y facilitar investigaciones posteriores.
 
 ---
 
-# 🧪 Estado de testing
+# 🧪 Calidad y testing
 
-El proyecto cuenta con una suite automatizada de más de **2.400 tests** entre backend, dominio, FHIR, reglas clínicas, API y seguridad.
+El proyecto cuenta con una suite automatizada de **más de 2.400 tests**.
 
-Las pruebas cubren, entre otros:
+Las pruebas cubren diferentes capas del sistema:
 
-* Unit testing.
-* Domain testing.
-* API testing.
+* Unit tests.
+* Domain tests.
+* API tests.
 * FHIR.
 * Reglas clínicas.
-* Aislamiento multi-tenant.
-* Seguridad.
-* Auditoría.
 * RBAC.
 * ABAC.
-* Flujos de derivación.
+* Aislamiento multi-tenant.
+* Auditoría.
+* Seguridad.
+* Derivaciones.
 * Endpoints clínicos.
 
 El proyecto continúa en proceso de hardening y ampliación de cobertura.
 
 ---
 
+# 🚦 Estado del proyecto
+
+## 🟢 Pre-producción
+
+Vantari cuenta actualmente con un núcleo funcional de gestión clínica y sanitaria.
+
+### Actualmente implementado
+
+* ✅ Gestión de pacientes.
+* ✅ Clinical Workbench.
+* ✅ Encuentros clínicos.
+* ✅ Observaciones.
+* ✅ Alergias.
+* ✅ Condiciones.
+* ✅ Medicaciones.
+* ✅ Prescripción electrónica.
+* ✅ Reglas de seguridad clínica.
+* ✅ Bloqueo por conflicto de alergias.
+* ✅ RBAC.
+* ✅ ABAC.
+* ✅ Auditoría.
+* ✅ FHIR R4.
+* ✅ Arquitectura multi-tenant.
+* ✅ Agenda.
+* ✅ Turnos.
+* ✅ Lista de espera.
+* ✅ Derivaciones.
+* ✅ Farmacia.
+* ✅ Reportes.
+* ✅ Dashboard y métricas.
+
+El proyecto se encuentra actualmente en evolución hacia una etapa de mayor **hardening, validación y preparación para escenarios reales de implementación institucional**.
+
+---
+
 # 🗺️ Roadmap
 
-El desarrollo se organiza mediante fases y sprints incrementales.
+El desarrollo de Vantari se organiza mediante fases y sprints incrementales.
 
-Actualmente el proyecto se encuentra en una etapa de **pre-producción**, con el núcleo clínico y administrativo operativo.
+Las principales áreas actuales y futuras incluyen:
 
-Las próximas áreas de evolución incluyen:
+### 🏥 Gestión clínica
 
-### Seguridad y hardening
+* Evolución del Clinical Workbench.
+* Historia clínica longitudinal.
+* Plantillas clínicas.
+* Órdenes y formularios.
+* Mejoras en workflows profesionales.
 
-* Ampliación de controles de seguridad.
-* Hardening de infraestructura.
-* Monitoreo.
-* Backup y recuperación.
-* Pruebas de carga.
-* Seguridad operacional.
+### 🚑 Triage digital
 
-### Triage digital
+Clasificación estructurada del riesgo al ingreso utilizando información clínica y reglas de priorización.
 
-Clasificación estructurada del riesgo del paciente al ingreso, con posibilidad de utilizar:
+### 📅 Agenda
 
-* Signos vitales.
-* Motivo de consulta.
-* Variables clínicas.
-* Reglas de priorización.
+* Optimización de agendas.
+* Gestión avanzada de turnos.
+* Listas de espera.
+* Reasignación automática.
+* Gestión por especialidad e institución.
 
-### Plantillas clínicas
+### 💊 Farmacia
 
-Plantillas rápidas para:
+* Integración más profunda entre prescripción, stock y dispensación.
+* Alertas.
+* Trazabilidad de medicamentos.
+* Gestión avanzada de inventario.
 
-* Prescripciones.
-* Órdenes.
-* Consultas frecuentes.
-* Procedimientos.
+### 🔄 Interoperabilidad
 
-### Evolución futura
+* Ampliación de cobertura FHIR.
+* Integración con sistemas externos.
+* Intercambio seguro entre instituciones.
+* Evolución hacia redes sanitarias interoperables.
 
-* Integración entre instituciones.
-* Portal del paciente.
-* Notificaciones mediante canales de alta disponibilidad.
-* Integraciones con laboratorios.
-* Interoperabilidad ampliada.
-* Analítica sanitaria.
+### 📊 Gestión sanitaria
+
+* Indicadores operativos.
+* Estadísticas sanitarias.
+* Dashboards institucionales.
 * Alertas epidemiológicas.
-* Telemedicina.
-* Aplicaciones móviles.
+* Analítica de red.
 
-El detalle actualizado del desarrollo se encuentra en:
+### 📱 Acceso del paciente
 
-**[`ROADMAP.md`](ROADMAP.md)**
+A futuro se contempla un modelo de comunicación orientado a canales de alta disponibilidad, incluyendo:
 
----
+* SMS.
+* WhatsApp.
+* Notificaciones.
+* Consulta de turnos.
+* Recetas activas.
+* Resultados de estudios.
 
-# 📁 Estructura del proyecto
-
-```text
-vantari-health/
-│
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── core/
-│   │   ├── domain/
-│   │   ├── services/
-│   │   └── ...
-│   │
-│   └── tests/
-│
-├── frontend/
-│   └── src/
-│       ├── app/
-│       ├── components/
-│       ├── hooks/
-│       ├── lib/
-│       └── store/
-│
-├── docs/
-│
-├── docker-compose.yml
-├── ROADMAP.md
-└── README.md
-```
+El detalle actualizado del desarrollo se encuentra en el roadmap interno del proyecto.
 
 ---
 
-# 🐳 Instalación
+# 🔒 Código fuente
 
-## Requisitos
+El código fuente completo de **Vantari Health** se mantiene actualmente en un repositorio privado debido a la naturaleza del proyecto y a que involucra procesos relacionados con el ámbito sanitario.
 
-* Docker
-* Docker Compose
-* Node.js
-* npm
-* Python 3.11+
+Este repositorio público funciona como espacio de documentación y presentación del proyecto.
 
-## Clonar el repositorio
+Aquí se publica información sobre:
 
-```bash
-git clone git@github.com:eminem5410/vantari-health.git
-cd vantari-health
-```
+* Arquitectura.
+* Visión del producto.
+* Funcionalidades.
+* Seguridad.
+* Interoperabilidad.
+* Roadmap.
+* Decisiones técnicas.
+* Evolución del proyecto.
 
-## Variables de entorno
+El código fuente completo, infraestructura y configuraciones internas no forman parte de este repositorio público.
 
-Configurar las variables necesarias para backend y frontend.
+### Acceso técnico
 
-Ejemplo:
-
-```bash
-cp frontend/.env.local.example frontend/.env.local
-```
-
-Configurar posteriormente:
-
-```text
-backend/.env
-frontend/.env.local
-```
-
-## Levantar infraestructura
-
-```bash
-docker-compose up -d
-```
-
-El procedimiento completo de instalación y configuración puede ampliarse en la documentación técnica del proyecto.
+Para evaluaciones profesionales, colaboraciones, revisiones de arquitectura, integraciones o potenciales oportunidades de desarrollo, es posible solicitar una demostración privada o acceso técnico controlado.
 
 ---
 
-# 🎯 Visión
+# 🤝 Colaboración
 
-La visión de Vantari es evolucionar desde un sistema de gestión clínica hacia una **infraestructura digital para redes sanitarias**.
+Vantari se encuentra en desarrollo activo y está abierto a conversaciones con:
 
-El objetivo final es que una persona pueda ser atendida en distintos puntos de una red y que el contexto clínico relevante pueda acompañarla de forma segura:
+* Profesionales de tecnología.
+* Arquitectos de software.
+* Especialistas en HealthTech.
+* Profesionales de salud.
+* Instituciones sanitarias.
+* Empresas de tecnología.
+* Organizaciones interesadas en interoperabilidad.
+* Potenciales colaboradores e integradores.
 
-```text
-                 ┌──────────────┐
-                 │    Vantari   │
-                 └──────┬───────┘
-                        │
-       ┌────────────────┼────────────────┐
-       │                │                │
-     CAPS            Hospital         Laboratorio
-       │                │                │
-       └────────────────┼────────────────┘
-                        │
-                     Farmacia
-                        │
-                   Especialistas
-```
-
-La plataforma busca combinar:
-
-**Interoperabilidad + Seguridad clínica + Gestión sanitaria + Trazabilidad + Datos**
-
-en una única infraestructura.
+Las contribuciones al código fuente se gestionan actualmente de forma privada.
 
 ---
 
-## 📌 Estado actual
+# 📬 Contacto
 
-> **Vantari Health — Pre-producción**
->
-> Núcleo clínico operativo · Multi-tenant · FHIR R4 · RBAC + ABAC · Clinical Workbench · Seguridad de prescripción · Agenda · Derivaciones · Farmacia · Auditoría
+Si querés conocer Vantari Health en mayor profundidad, discutir una posible integración, revisar la arquitectura o solicitar una demostración:
 
----
+**Contacto:** Pablo Diez
 
-## 📄 Licencia
-
-Este proyecto se encuentra actualmente en desarrollo.
-
-La información sobre licencia y condiciones de uso será definida antes de una distribución pública de la plataforma.
+> Para consultas técnicas o institucionales, contactarse directamente con el responsable del proyecto.
 
 ---
 
-**Vantari Health**
-*Infraestructura digital para una salud conectada, segura e interoperable.*
+# 🏥 Vantari Health
+
+### *Infraestructura digital para una salud conectada, segura e interoperable.*
+
+**Gestión clínica · Seguridad del paciente · Interoperabilidad · Auditoría · Multi-tenancy**
